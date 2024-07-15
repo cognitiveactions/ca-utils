@@ -95,6 +95,25 @@ async function uploadFolder(localFolder, url) {
   }
 }
 
+async function uploadStream(data, destination_url, contentType, contentLength) {
+  const bp = getBucketParams(destination_url);
+  const client = new S3Client({
+    credentials: {
+      accessKeyId: bp.accessKeyId,
+      secretAccessKey: bp.secretAccessKey,
+    },
+    region:bp.region,
+  });
+  const command = new PutObjectCommand({
+    Bucket: bp.bucket,
+    Key: bp.key,
+    Body: data,
+    ContentType: contentType,
+    ContentLength: contentLength,
+  });
+  await client.send(command);
+}
+
 const TEMP_ROOT = './output';
 console.log('USE TEMP ROOT', TEMP_ROOT);
 
@@ -113,6 +132,7 @@ export {
   uploadFolder,
   getTempFolder,
   getTempPath,
+  uploadStream
 };
 
 try {
